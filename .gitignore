@@ -1,0 +1,26 @@
+# Python & Virtualenv
+**/venv/
+**/.env
+**/__pycache__/
+*.py[cod]
+*$py.class
+studymate_backend/uploads/*
+!studymate_backend/uploads/.gitkeep
+
+# Flutter / Dart
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugin-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
