@@ -21,5 +21,6 @@ passlib[bcrypt]>=1.7.4
 python-jose[cryptography]>=3.3.0
 
 # AI & Document Processing
+google-genai>=0.1.1
 google-generativeai>=0.4.1
 pypdf>=4.1.0
