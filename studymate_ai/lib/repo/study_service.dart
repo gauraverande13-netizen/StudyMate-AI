@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:studymate_ai/models/recent_work_model.dart';
 
 class StudyService {
-  static const String baseUrl = 'http://127.0.0.1:8000';
+  static const String baseUrl = 'https://studymate-backend-zrrm.onrender.com';
 
   static Future<List<RecentWork>> fetchRecentWork() async {
     final url = Uri.parse('$baseUrl/api/v1/study/recent-works');

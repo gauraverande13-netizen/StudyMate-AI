@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:studymate_ai/constant/api_constants.dart';
 
 class ChatService {
-  static const String baseUrl = 'http://127.0.0.1:8000/api/v1';
+  static const String baseUrl = ApiConstants.baseUrl;
 
   static Future<Map<String, dynamic>> sendMessage({
     required String message,

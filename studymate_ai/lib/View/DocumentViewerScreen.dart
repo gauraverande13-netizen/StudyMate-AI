@@ -88,7 +88,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen>
           widget.fileUrl!.startsWith('https://')) {
         return widget.fileUrl!;
       }
-      return 'http://127.0.0.1:8000${widget.fileUrl!}';
+      return 'https://studymate-backend-zrrm.onrender.com${widget.fileUrl!}';
     }
     if (widget.docId != null) {
       return SummaryService.getFileUrl(widget.docId);

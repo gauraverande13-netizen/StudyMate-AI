@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:studymate_ai/constant/api_constants.dart';
 
 class PlannerService {
-  static const String baseUrl = 'http://127.0.0.1:8000/api/v1/planner';
+  static const String baseUrl = '${ApiConstants.baseUrl}/planner';
 
   // Date-wise tasks get karna
   static Future<List<Map<String, dynamic>>> fetchTasksByDate({

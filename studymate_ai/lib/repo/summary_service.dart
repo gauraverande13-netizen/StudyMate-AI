@@ -3,7 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 
 class SummaryService {
-  static const String baseUrl = 'http://127.0.0.1:8000/api/v1';
+  static const String baseUrl = 'https://studymate-backend-zrrm.onrender.com/api/v1';
 
   // 1. Fetch user-specific uploaded documents
   static Future<List<dynamic>> getUserDocuments({required int userId}) async {

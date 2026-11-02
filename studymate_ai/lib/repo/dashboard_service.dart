@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:studymate_ai/constant/api_constants.dart';
 
 class DashboardService {
-  static const String baseUrl = 'http://127.0.0.1:8000';
+  static const String baseUrl = ApiConstants.serverUrl;
 
   static Future<Map<String, dynamic>> getDashboardSummary({int? userId}) async {
     final query = userId != null ? '?user_id=$userId' : '';

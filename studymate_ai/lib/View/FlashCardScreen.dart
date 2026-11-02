@@ -28,7 +28,7 @@ class FlashCardScreen extends StatefulWidget {
 }
 
 class _FlashCardScreenState extends State<FlashCardScreen> {
-  static const String baseUrl = 'http://127.0.0.1:8000/api/v1';
+  static const String baseUrl = 'https://studymate-backend-zrrm.onrender.com/api/v1';
 
   int? _userId;
   int _selectedTabIndex = 0; // 0: Practice Flip Mode, 1: Manage Cards
