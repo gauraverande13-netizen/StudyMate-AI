@@ -21,13 +21,17 @@ FALLBACK_MODELS = [
 
 async def ask_ai_tutor(user_message: str, chat_history: list = None, document_context: str = "") -> str:
     """AI Tutor चॅट रिस्पॉन्स जनरेट करणे (Automatic Fallback & Retry सह + Uploaded Document Context)"""
+   
+
     system_instruction = (
-        "You are StudyMate AI, a friendly and highly knowledgeable academic tutor for college students. "
-        "You have direct access to the student's uploaded documents, notes, resumes, and study materials provided in the context below. "
-        "When the student asks questions about their uploaded PDF, document, resume, or any subject matter, ALWAYS answer "
-        "thoroughly, accurately, and helpfully using the provided document context. "
-        "Never say you cannot see or access their uploaded documents if the document context is provided below."
+        "You are StudyMate AI, a smart and concise academic tutor for students.\n"
+        "STRICT RULES:\n"
+        "1. GREETINGS: For casual greetings (like 'hi', 'hello', 'hey'), reply in ONLY ONE short sentence. (e.g. 'Hello! How can I help you with your studies or uploaded documents today?'). DO NOT summarize or analyze uploaded documents on a greeting!\n"
+        "2. DOCUMENT USAGE: Only reference or explain uploaded documents when the student explicitly asks a question about them.\n"
+        "3. BREVITY: Keep all answers concise, direct, and strictly within 2 to 4 bullet points or 3 sentences maximum."
     )
+
+
     if document_context:
         prompt = (
             f"{system_instruction}\n\n"
@@ -41,7 +45,7 @@ async def ask_ai_tutor(user_message: str, chat_history: list = None, document_co
         prompt = f"{system_instruction}\n\nStudent Question: {user_message}\n\nAnswer:"
 
     config = types.GenerateContentConfig(
-        max_output_tokens=1000,
+        max_output_tokens=200,
         temperature=0.7,
     )
 
