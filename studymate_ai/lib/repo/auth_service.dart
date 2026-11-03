@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:studymate_ai/constant/api_constants.dart';
 import 'package:studymate_ai/repo/user_session.dart';
@@ -11,6 +12,7 @@ class AuthService {
     required String password,
   }) async {
     final url = Uri.parse('$baseUrl/auth/login');
+    debugPrint('--> [AuthService] POST: $url');
     try {
       final response = await http.post(
         url,
@@ -19,7 +21,9 @@ class AuthService {
           'Accept': 'application/json',
         },
         body: jsonEncode({'email': email, 'password': password}),
-      );
+      ).timeout(const Duration(seconds: 15));
+
+      debugPrint('<-- [AuthService] Status: ${response.statusCode}, Body: ${response.body}');
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
@@ -42,6 +46,7 @@ class AuthService {
         };
       }
     } catch (e) {
+      debugPrint('[AuthService] Error: $e');
       return {'success': false, 'message': 'Server connection error: $e'};
     }
   }
@@ -53,6 +58,7 @@ class AuthService {
   }) async {
     final url = Uri.parse('$baseUrl/auth/signup');
     final String fallbackName = fullName ?? email.split('@').first;
+    debugPrint('--> [AuthService] POST: $url');
     try {
       final response = await http.post(
         url,
@@ -65,8 +71,9 @@ class AuthService {
           'full_name': fallbackName,
           'password': password,
         }),
-      );
+      ).timeout(const Duration(seconds: 15));
 
+      debugPrint('<-- [AuthService] Status: ${response.statusCode}, Body: ${response.body}');
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -87,6 +94,7 @@ class AuthService {
         };
       }
     } catch (e) {
+      debugPrint('[AuthService] Error: $e');
       return {'success': false, 'message': 'Server error: $e'};
     }
   }
