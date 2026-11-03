@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class SummaryService {
@@ -15,8 +16,7 @@ class SummaryService {
           .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        return List<dynamic>.from(data);
+        return jsonDecode(response.body);
       } else {
         return [];
       }
@@ -44,7 +44,7 @@ class SummaryService {
             filename: file.name,
           ),
         );
-      } else if (file.path != null) {
+      } else if (!kIsWeb && file.path != null) {
         request.files.add(
           await http.MultipartFile.fromPath('file', file.path!),
         );
@@ -58,42 +58,48 @@ class SummaryService {
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        final docId = data['id'] ?? data['doc_id'];
+        final decoded = jsonDecode(response.body);
         return {
           'success': true,
-          'doc_id': docId,
-          'filename': data['filename'] ?? file.name,
-          'summary': data['summary'] ?? 'Summary not found.',
-          'key_points': data['key_points'] ?? '',
-          'full_text': data['full_text'] ?? '',
-          'file_url': data['file_url'] ?? (docId != null ? '$baseUrl/docs/$docId/file' : ''),
+          'summary': decoded['summary'],
+          'key_points': decoded['key_points'],
+          'full_text': decoded['full_text'],
+          'filename': decoded['filename'],
+          'doc_id': decoded['id'],
+          'file_url': decoded['file_url'],
         };
       } else {
-        return {
-          'success': false,
-          'message': 'Upload failed (${response.statusCode}): ${response.body}',
-        };
+        try {
+          final errorData = jsonDecode(response.body);
+          return {
+            'success': false,
+            'message': errorData['detail'] ?? 'Document processing failed.',
+          };
+        } catch (_) {
+          return {
+            'success': false,
+            'message': 'Failed with status code: ${response.statusCode}',
+          };
+        }
       }
     } catch (e) {
-      return {'success': false, 'message': 'Connection error: $e'};
+      return {'success': false, 'message': 'Upload error: $e'};
     }
   }
 
-  // Helper to get download/view URL for document
-  static String getFileUrl(dynamic docId) {
-    return '$baseUrl/docs/$docId/file';
+  // 3. Delete Document
+  static Future<bool> deleteDocument(dynamic docId) async {
+    final url = Uri.parse('$baseUrl/docs/$docId');
+    try {
+      final response = await http.delete(url);
+      return response.statusCode == 200 || response.statusCode == 204;
+    } catch (e) {
+      return false;
+    }
   }
 
-  // Fetch full document details including extracted text
-  static Future<Map<String, dynamic>?> getDocumentContent(dynamic docId) async {
-    final url = Uri.parse('$baseUrl/docs/$docId/content');
-    try {
-      final response = await http.get(url).timeout(const Duration(seconds: 10));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body) as Map<String, dynamic>;
-      }
-    } catch (_) {}
-    return null;
+  // 4. File URL generator
+  static String getFileUrl(dynamic docId) {
+    return '$baseUrl/docs/$docId/file';
   }
 }

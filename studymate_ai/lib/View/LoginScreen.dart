@@ -50,9 +50,11 @@ class _LoginscreenState extends State<Loginscreen> {
       final int userId = result['user_id'] is int
           ? result['user_id']
           : int.tryParse(result['user_id']?.toString() ?? '1') ?? 1;
-      final String formattedName = result['user_name'] ??
+      final String formattedName =
+          result['user_name'] ??
           (email.split('@').first.isNotEmpty
-              ? email.split('@').first[0].toUpperCase() + email.split('@').first.substring(1)
+              ? email.split('@').first[0].toUpperCase() +
+                    email.split('@').first.substring(1)
               : "User");
 
       if (!mounted) return;
@@ -299,14 +301,12 @@ class _LoginscreenState extends State<Loginscreen> {
                       : const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            RawGestureDetector(
-                              child: Text(
-                                'Login',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
+                            Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
                               ),
                             ),
                             SizedBox(width: 8),

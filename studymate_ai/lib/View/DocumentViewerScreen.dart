@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:studymate_ai/repo/summary_service.dart';
 
@@ -59,20 +61,6 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen>
     _isPdf = widget.fileName.toLowerCase().endsWith('.pdf');
     _fullText = widget.fullContent;
     _loadedBytes = widget.fileBytes;
-
-    _initializeDocument();
-  }
-
-  Future<void> _initializeDocument() async {
-    // If text was not provided upfront and we have a docId, fetch the full extracted content
-    if ((_fullText == null || _fullText!.isEmpty) && widget.docId != null) {
-      final docData = await SummaryService.getDocumentContent(widget.docId);
-      if (mounted && docData != null) {
-        setState(() {
-          _fullText = docData['full_text'];
-        });
-      }
-    }
   }
 
   @override
@@ -206,9 +194,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen>
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.white,
-            border: const Border(
-              bottom: BorderSide(color: Color(0xFFE2E8F0)),
-            ),
+            border: const Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.03),
@@ -228,7 +214,10 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen>
                     : null,
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(8),
@@ -257,8 +246,10 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen>
                 icon: const Icon(Icons.remove_circle_outline_rounded, size: 20),
                 tooltip: 'Zoom Out',
                 onPressed: () {
-                  final newZoom = (_pdfViewerController.zoomLevel - 0.25)
-                      .clamp(1.0, 3.0);
+                  final newZoom = (_pdfViewerController.zoomLevel - 0.25).clamp(
+                    1.0,
+                    3.0,
+                  );
                   _pdfViewerController.zoomLevel = newZoom;
                 },
               ),
@@ -273,8 +264,10 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen>
                 icon: const Icon(Icons.add_circle_outline_rounded, size: 20),
                 tooltip: 'Zoom In',
                 onPressed: () {
-                  final newZoom = (_pdfViewerController.zoomLevel + 0.25)
-                      .clamp(1.0, 3.0);
+                  final newZoom = (_pdfViewerController.zoomLevel + 0.25).clamp(
+                    1.0,
+                    3.0,
+                  );
                   _pdfViewerController.zoomLevel = newZoom;
                 },
               ),
@@ -352,7 +345,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen>
       );
     }
 
-    if (!kIsWeb && widget.filePath != null && File(widget.filePath!).existsSync()) {
+    if (!kIsWeb &&
+        widget.filePath != null &&
+        File(widget.filePath!).existsSync()) {
       return SfPdfViewer.file(
         File(widget.filePath!),
         controller: _pdfViewerController,
@@ -426,8 +421,8 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen>
     final displayText = (_fullText != null && _fullText!.trim().isNotEmpty)
         ? _fullText!
         : ((widget.fullContent != null && widget.fullContent!.trim().isNotEmpty)
-            ? widget.fullContent!
-            : widget.summary);
+              ? widget.fullContent!
+              : widget.summary);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -589,7 +584,8 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen>
                     tooltip: 'Copy Summary',
                     color: const Color(0xFF64748B),
                     onPressed: () {
-                      final summaryCopy = '${widget.summary}\n\nKey Points:\n${widget.keyTakeaways.map((p) => '• $p').join('\n')}';
+                      final summaryCopy =
+                          '${widget.summary}\n\nKey Points:\n${widget.keyTakeaways.map((p) => '• $p').join('\n')}';
                       Clipboard.setData(ClipboardData(text: summaryCopy));
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

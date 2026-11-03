@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -195,7 +196,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
             keyTakeaways: parsedPoints,
             uploadedAt: DateTime.now(),
             fileBytes: pickedFile.bytes,
-            filePath: pickedFile.path,
+            filePath: kIsWeb ? null : pickedFile.path,
             fileUrl: fileUrl,
             fullContent: fullContent,
           );

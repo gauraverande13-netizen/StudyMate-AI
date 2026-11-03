@@ -1,10 +1,13 @@
+import os
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.chat import ChatSession, ChatMessage
+from app.models.document import Document
 from app.schemas.chat import ChatPromptRequest, MessageResponse, ChatSessionResponse
 from app.service.ai_tutor import ask_ai_tutor
+from app.service.pdf_parser import extract_text_from_file
 
 router = APIRouter(prefix="/chat", tags=["AI Tutor Chat"])
 
@@ -53,10 +56,35 @@ async def send_message(
     db.add(user_msg)
     db.commit()
 
-    # 2. Get AI reply
-    ai_reply = await ask_ai_tutor(user_message=payload.message)
+    # 2. Build document context from user's uploaded files in DB
+    user_docs = db.query(Document).filter(
+        Document.user_id == effective_user_id
+    ).order_by(Document.id.desc()).all()
 
-    # 3. Save AI message
+    docs_context = ""
+    if user_docs:
+        doc_parts = []
+        for doc in user_docs[:5]:
+            doc_body = ""
+            if doc.file_path and os.path.exists(doc.file_path):
+                try:
+                    with open(doc.file_path, "rb") as f:
+                        doc_body = extract_text_from_file(f.read(), doc.filename)
+                except Exception:
+                    pass
+            if not doc_body:
+                summary_text = doc.summary or "No summary available"
+                key_pts = doc.key_points or ""
+                doc_body = f"Summary: {summary_text}\nKey Points:\n{key_pts}"
+
+            doc_parts.append(f"DOCUMENT NAME: {doc.filename}\nCONTENT:\n{doc_body[:3500]}")
+
+        docs_context = "\n\n".join(doc_parts)
+
+    # 3. Get AI reply with document context
+    ai_reply = await ask_ai_tutor(user_message=payload.message, document_context=docs_context)
+
+    # 4. Save AI message
     ai_msg = ChatMessage(session_id=session.id, sender="ai", content=ai_reply)
     db.add(ai_msg)
     db.commit()
