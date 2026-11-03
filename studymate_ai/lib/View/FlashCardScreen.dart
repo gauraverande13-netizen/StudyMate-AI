@@ -31,7 +31,7 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
   static const String baseUrl = 'https://studymate-backend-zrrm.onrender.com/api/v1';
 
   int? _userId;
-  int _selectedTabIndex = 0; // 0: Practice Flip Mode, 1: Manage Cards
+  int _selectedTabIndex = 0; 
   int _currentCardIndex = 0;
   bool _showAnswer = false;
   bool _isLoading = false;
@@ -53,7 +53,6 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
     _fetchUserFlashcards();
   }
 
-  // Backend kadun flashcards fetch karne (GET /api/v1/flashcards/?user_id=...)
   Future<void> _fetchUserFlashcards() async {
     try {
       final effectiveId = _userId ?? await UserSession.getUserId();
@@ -85,7 +84,6 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
     }
   }
 
-  // Backend la new card post karne (POST /api/v1/flashcards/)
   Future<void> _createCardOnBackend(
     String subject,
     String question,
@@ -109,7 +107,6 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
     }
   }
 
-  // Next card var jane
   void _nextCard() {
     setState(() {
       _showAnswer = false;
