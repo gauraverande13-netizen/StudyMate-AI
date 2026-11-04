@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:studymate_ai/models/recent_work_model.dart';
 
